@@ -1,0 +1,67 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+np.random.seed(42)
+t = np.arange(1, 101)  
+y = 10 + 0.5 * t + 5 * np.sin(0.2 * t) + np.random.normal(0, 2, size=len(t))  
+y_ls = y.copy()
+
+shift_magnitude = 10  
+shift_start = 50  
+y_ls[shift_start:] += shift_magnitude  
+
+y_pred = y
+residuals = y_ls - y_pred  
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, y, label='True Time Series', color='blue', linewidth=2) 
+plt.plot(t, y_ls, label='Time Series with LS', color='red', linestyle='--', linewidth=2)  
+plt.axvline(x=shift_start, color='orange', linestyle='--', label='LS Start Point') 
+plt.xlabel('Time')
+plt.ylabel('Value')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.tight_layout()
+plt.show()
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+t = np.arange(1, 101)  
+y = 10 + 0.5 * t + 5 * np.sin(0.2 * t) + np.random.normal(0, 2, size=len(t)) 
+y_ls = y.copy()
+
+shift_magnitude = 10
+shift_start = 50
+y_ls[shift_start:] += shift_magnitude
+
+y_pred = y
+residuals = y_ls - y_pred
+
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, y, label='True Time Series', color='blue', linewidth=2)
+plt.plot(t, y_ls, label='Time Series with LS', color='red', linestyle='--', linewidth=2)
+plt.axvline(x=shift_start, color='orange', linestyle='--', label='LS Start Point')
+plt.xlabel('Time')
+plt.ylabel('Value')
+plt.title('Original vs Level Shifted Time Series')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(10, 5))  
+plt.plot(t, residuals, label='Residuals (LS - Prediction)', color='green')
+plt.axvline(x=shift_start, color='orange', linestyle='--', label='LS Start Point')
+plt.axhline(y=0, color='gray', linestyle='--', linewidth=1)
+plt.xlabel('Time')
+plt.ylabel('Residual')
+plt.title('Residuals After Level Shift')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.tight_layout()
+plt.show()
