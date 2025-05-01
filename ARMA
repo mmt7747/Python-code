@@ -1,0 +1,46 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+t_range = np.arange(-4, 6, 1)
+xt_labels = [fr'$X_{{t{f"{i:+}"}}}$' for i in t_range]
+epsilon_labels = [fr'$\varepsilon_{{t{f"{i:+}"}}}$' for i in t_range]
+
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.axhline(y=0, color='blue', linewidth=1)
+ax.set_xlim(-1, 10)
+ax.set_ylim(-0.5, 6)
+
+for i, t_val in enumerate(t_range):
+    x_pos = i
+    ax.plot(x_pos, 0, '|', color='blue', markersize=10)
+    ax.text(x_pos, -0.4, fr'$t{t_val:+}$' if t_val != 0 else r'$t$', ha='center', fontsize=11)
+    ax.text(x_pos, 0.3, epsilon_labels[i], ha='center', fontsize=11, color='teal')
+    ax.text(x_pos, 5.2, xt_labels[i], ha='center', fontsize=12, color='darkred')
+
+def draw_curved_arrow(x_start, x_end, rad, color):
+    ax.annotate("",
+                xy=(x_end, 5.0),
+                xytext=(x_start, 5.0),
+                arrowprops=dict(arrowstyle="->", color=color, lw=2,
+                                connectionstyle=f"arc3,rad={rad}"))
+
+draw_curved_arrow(2, 4, 0.3, 'green') 
+draw_curved_arrow(3, 4, 0.2, 'green')  
+draw_curved_arrow(3, 5, 0.2, 'green')  
+draw_curved_arrow(4, 5, 0.3, 'green')  
+
+
+def draw_straight_arrow(x_eps, x_xt, color):
+    ax.annotate("",
+                xy=(x_xt, 5.0),
+                xytext=(x_eps, 0.4),
+                arrowprops=dict(arrowstyle="->", color=color, lw=2, ls='dashed'))
+
+draw_straight_arrow(4, 4, 'orange') 
+draw_straight_arrow(3, 4, 'orange')  
+draw_straight_arrow(5, 5, 'orange')  
+draw_straight_arrow(4, 5, 'orange')  
+
+ax.axis('off')
+plt.tight_layout()
+plt.show()
