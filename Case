@@ -1,0 +1,68 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from arch import arch_model
+from statsmodels.robust.robust_linear_model import RLM
+import statsmodels.api as sm
+
+sns.set_style("whitegrid")
+
+file_path = "/Users/mathilde/Desktop/pythonProject/HistoricalData.csv"
+df = pd.read_csv(file_path)
+
+df["Date"] = pd.to_datetime(df["Date"], format="%m/%d/%Y")
+df = df.sort_values(by="Date")
+
+df["Close"] = df["Close/Last"]
+df["Return"] = df["Close"].pct_change() * 100  
+df.dropna(inplace=True)
+
+plt.figure(figsize=(12, 5))
+plt.plot(df["Date"], df["Return"], label="Daily Return", color="blue", alpha=0.6)
+plt.axhline(y=0, color="black", linestyle="--")
+plt.xlabel("Date")
+plt.ylabel("Return (%)")
+plt.legend()
+plt.show()
+
+np.random.seed(42)
+outlier_dates = np.random.choice(df["Date"], size=10, replace=False)
+df.loc[df["Date"].isin(outlier_dates), "Return"] *= 5  
+
+plt.figure(figsize=(12, 5))
+plt.plot(df["Date"], df["Return"], label="Daily Return with Outliers", color="blue", alpha=0.6)
+plt.scatter(df.loc[df["Date"].isin(outlier_dates), "Date"], df.loc[df["Date"].isin(outlier_dates), "Return"],
+            color="red", label="Injected Outliers", zorder=3)
+plt.axhline(y=0, color="black", linestyle="--")
+plt.xlabel("Date")
+plt.ylabel("Return (%)")
+plt.legend()
+plt.show()
+
+garch_model_ols = arch_model(df["Return"], vol="Garch", p=1, q=1, dist="normal")
+garch_results_ols = garch_model_ols.fit(disp="off")
+
+print("📊 GARCH(1,1) OLS :\n", garch_results_ols.summary())
+
+X = np.ones(len(df))  
+y = df["Return"].values
+
+ols_beta = np.linalg.lstsq(X.reshape(-1, 1), y, rcond=None)[0]
+
+m_model = RLM(y, X, M=sm.robust.norms.HuberT())
+m_results = m_model.fit()
+
+print("📊 OLS :", ols_beta)
+print("📊 M :", m_results.params)
+
+df["Volatility_OLS"] = np.sqrt(garch_results_ols.conditional_volatility)
+df["Volatility_M"] = np.sqrt(m_results.resid ** 2)
+
+plt.figure(figsize=(12, 5))
+plt.plot(df["Date"], df["Volatility_OLS"], label="M-Estimated Volatility", color="blue")
+plt.plot(df["Date"], df["Volatility_M"], label="OLS Estimated Volatility", color="orange", linestyle="dashed")
+plt.xlabel("Date")
+plt.ylabel("Volatility")
+plt.legend()
+plt.show()
