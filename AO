@@ -1,0 +1,64 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+t = np.arange(1, 101)  
+y = 10 + 0.5 * t + 5 * np.sin(0.2 * t) + np.random.normal(0, 2, size=len(t))  
+y_outlier = y.copy()
+y_outlier[49] += 20  
+
+y_pred = y
+residuals = y_outlier - y_pred  
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, y, label='True Time Series', color='blue')
+plt.plot(t, y_outlier, label='Time Series with AO', color='red', linestyle='--')
+plt.scatter(50, y_outlier[49], color='red', label='Additive Outlier', zorder=5)
+plt.xlabel('Time')
+plt.ylabel('Value')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, residuals, label='Residuals', color='green')
+plt.axhline(0, color='black', linestyle='--', linewidth=0.8)
+plt.scatter(50, residuals[49], color='red', label='Residual of AO', zorder=5)
+plt.xlabel('Time')
+plt.ylabel('Residual')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+t = np.arange(1, 101)  
+y = 10 + 0.5 * t + 5 * np.sin(0.2 * t) + np.random.normal(0, 2, size=len(t))  
+y_io = y.copy()
+
+io_magnitude = 20  
+io_time = 50  
+
+for i in range(io_time, len(t)):
+    y_io[i] += io_magnitude * 0.8 ** (i - io_time)  
+
+y_pred = y
+residuals = y_io - y_pred  
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, residuals, label='Residuals', color='green') 
+plt.axhline(0, color='black', linestyle='--', linewidth=0.8)  
+plt.scatter(io_time, residuals[io_time - 1], color='red', label='Residual of IO', zorder=5)  
+plt.xlabel('Time')
+plt.ylabel('Residual')
+plt.title('Residuals with Innovational Outlier (IO)')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.tight_layout()
+plt.show()
