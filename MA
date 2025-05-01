@@ -1,0 +1,38 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+t_range = np.arange(-5, 6, 1)
+
+xt_positions = [4, 5, 6, 7]  
+xt_labels = [r'$X_{t-1}$', r'$X_t$', r'$X_{t+1}$', r'$X_{t+2}$']
+
+epsilon_labels = [fr'$\varepsilon_{{t{f"{i:+}"}}}$' for i in t_range]
+
+
+fig, ax = plt.subplots(figsize=(12, 3))
+ax.axhline(y=0, color='blue', linewidth=1)
+ax.set_xlim(-1, 11)
+ax.set_ylim(-0.5, 4.5)
+
+for i, t_val in enumerate(t_range):
+    ax.plot(i, 0, '|', color='blue', markersize=10)
+    ax.text(i, -0.4, fr'$t{t_val:+}$' if t_val != 0 else r'$t$', ha='center', fontsize=11)
+    ax.text(i, 0.3, epsilon_labels[i], ha='center', fontsize=11, color='teal')
+
+for i, pos in enumerate(xt_positions):
+    ax.text(pos, 4.2, xt_labels[i], ha='center', fontsize=13, color='darkblue')
+
+
+colors = ['green', 'orange', 'red', 'magenta']
+for i, xt_pos in enumerate(xt_positions):
+    for offset in range(3):  
+        if xt_pos - offset >= 0:
+            ax.annotate("",
+                        xy=(xt_pos, 4.0),
+                        xytext=(xt_pos - offset, 0.4),
+                        arrowprops=dict(arrowstyle="->", color=colors[i], lw=2))
+
+ax.axis('off')
+
+plt.tight_layout()
+plt.show()
